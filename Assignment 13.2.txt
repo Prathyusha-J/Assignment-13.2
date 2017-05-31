@@ -1,0 +1,38 @@
+                     ASSUGNMENT 13.2
+1. HFile :
+A)
+file of sorted key/value pairs. 
+Both keys and values are byte arrays.
+When the MemStore accumulates enough data, the entire sorted KeyValue set is written 
+
+2 HRegion Server:
+A)
+It checks in with the HMaster. 
+There are many HRegionServers in a single HBase deployment.
+Region servers serve data for reads and writes.
+Regions are assigned to the Region Servers.
+
+
+3 HBase Meta Table
+The .META. table keeps a list of all regions in the system. The .META. table structure is as follows:
+Key:Region key of the format ([table],[region start key],[region id])
+Values:info:regioninfo (serialized HRegionInfo instance for this region)
+
+
+4 Zookeeper
+HBase uses ZooKeeper as a distributed coordination service to maintain server state in the cluster.
+Zookeeper maintains which servers are alive and available, and provides server failure notification.
+
+5 How read and write operation is performed in HBase.
+*Read Operation:
+A read request is sent to zookeeper from Hbase by the client.
+The zookeeper,gives the address for the META table.
+The process gets the region address of table from the META Table.
+From the specific HRegion, the process enters the BlockCache where data is present from previous read. 
+If the table is found, the process returns to client with the data as result.
+If the table is not found, the process starts to search MemStore. 
+
+*Write Operation:
+When the client issues a Put request, the first step is to write the data to the write-ahead log, the WAL:
+Edits are appended to the end of the WAL file that is stored on disk.
+The WAL is used to recover not-yet-persisted data in case a server crashes.
